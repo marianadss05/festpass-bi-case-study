@@ -218,3 +218,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# SQLite databases
+*.db
+festpass-project/02-sql-analysis/festpass.db
