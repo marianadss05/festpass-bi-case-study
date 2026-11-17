@@ -1,20 +1,31 @@
+-- =====================================================================
+-- FestPass: Operational & Business Queries (SQLite 3)
+-- ---------------------------------------------------------------------
+-- Prerequisites: ../01-database-design/schema.sql + seed_data.sql
+-- Each query is self-contained and preceded by the business question.
+-- =====================================================================
+
 -- 1. What is the total audience capacity of each festival?
 SELECT
-	f.Name,
+	f.FestivalID,
+	f.Name AS FestivalName,
+	COUNT(s.StageID) AS NumberOfStages,
 	SUM(s.Capacity) AS TotalCapacity
 FROM
 	Festival f
 INNER JOIN Stage s ON
 	f.FestivalID = s.FestivalID
 GROUP BY
+	f.FestivalID,
 	f.Name
 ORDER BY
 	TotalCapacity DESC;
 
 -- 2. Which customers have made purchases, how many orders did each place, and what is their total spend (ordered from highest to lowest)?
+--    Note: based on CustomerOrder.TotalAmount (gross amount charged at checkout, before cancellations).
 SELECT
-	c.FullName,
 	c.CustomerID,
+	c.FullName,
 	COUNT(co.OrderID) AS CustomerOrders,
 	SUM(co.TotalAmount) AS CustomerTotalSpend
 FROM
@@ -40,6 +51,7 @@ WHERE
 	co.OrderID IS NULL;
 
 -- 4. What is the total number of orders, total revenue, and average order value for each payment method, ordered from highest to lowest revenue?
+--    Note: gross order value (cancelled tickets are not deducted here; see Q5 for net ticket revenue).
 SELECT 
 	PaymentMethod,
 	COUNT(OrderID) AS NumberOfOrders,
@@ -53,6 +65,7 @@ ORDER BY
 	TotalRevenue DESC;
 
 -- 5. How many non-cancelled tickets were sold and what is the total ticket revenue for each festival, ordered from highest to lowest revenue?
+--    Note: revenue is valued at the ticket type's list price (TicketType.Price).
 SELECT 
 	f.FestivalID,
 	f.Name,
@@ -86,13 +99,14 @@ HAVING
 ORDER BY 
 	VendorsTotalRevenue DESC;
 
--- 7. List all scheduled performances at the main stages across all festivals, showing the festival name, artist name, performance date, start time, and end time (ordered chronologically).
+-- 7. List all scheduled performances at the main stages across all festivals, showing the festival name, stage name, artist name, start time and end time (ordered chronologically).
+--    Assumption: main stages are identified by the word 'Main' in the stage name (no explicit stage-type attribute in the model).
 SELECT 
 	f.Name AS FestivalName,
 	s.Name AS StageName,
 	a.Name AS ArtistName,
-	p.startTime,
-	p.endTime
+	p.StartTime,
+	p.EndTime
 FROM 
 	Festival f 
 INNER JOIN Stage s ON 
@@ -132,7 +146,7 @@ ORDER BY
 SELECT 
 	f.FestivalID,
 	f.Name AS FestivalName,
-	COUNT(w.WristbandID) AS TotalActivatedWristbands,
+	COUNT(w.ActivationDate) AS TotalActivatedWristbands,  -- counts only wristbands with an activation date
 	COALESCE(ROUND(SUM(w.Balance), 2), 0) AS RemainingBalance
 FROM
 	Festival f
@@ -151,9 +165,9 @@ ORDER BY
 -- 10. Breakdown of ticket statuses by festival and ticket type: show the festival name, ticket type name, ticket status, and total number of tickets, ordered by festival name, ticket type name, and ticket count descending.
 SELECT 
 	f.FestivalID,
-	f.Name as FestivalName,
+	f.Name AS FestivalName,
 	tt.TicketTypeID,
-	tt.Name as TicketTypeName,
+	tt.Name AS TicketTypeName,
 	COALESCE(t.Status, 'No Tickets Sold') AS TicketStatus,
 	COUNT(t.TicketID) AS TicketCount
 FROM
@@ -163,11 +177,11 @@ LEFT JOIN TicketType tt ON
 LEFT JOIN Ticket t ON
 	tt.TicketTypeID = t.TicketTypeID 
 GROUP BY 
-	t.Status,
 	f.FestivalID,
 	f.Name,
 	tt.TicketTypeID,
-	tt.Name
+	tt.Name,
+	t.Status
 ORDER BY 
 	f.Name,
 	tt.Name,
