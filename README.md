@@ -1,10 +1,10 @@
-# Data & BI Portfolio
+# FestPass: BI Case Study
 
-Computer Engineering student at ISEP, interested in Data Analytics and Business Intelligence. This repository documents what I am learning by building a practical project from scratch.
+Personal project by a final-year Informatics Engineering student at ISEP, interested in Data Analytics and Business Intelligence. It documents, step by step, how I take a company's data from database design to business answers.
 
-## Main project: [FestPass](festpass-project/)
+## The case
 
-A case study for a fictional company that runs music festivals, sells tickets online and uses cashless wristbands for payments on site. The goal is to go from the database design to business analysis and, later, KPIs and dashboards.
+A fictional company that runs music festivals, sells tickets online and uses cashless wristbands for payments on site. The goal is to go from the database design to business analysis and, later, KPIs and dashboards. The full case study is in [festpass-project](festpass-project/).
 
 | Module | Content | Status |
 | :--- | :--- | :--- |
@@ -16,3 +16,6 @@ A case study for a fictional company that runs music festivals, sells tickets on
 
 ## Tools
 SQL (SQLite), DBeaver, dbdiagram.io, Git/GitHub
+
+## Contact
+[LinkedIn](https://www.linkedin.com/in/mariana-sousa-79bb383b5) · [GitHub profile](https://github.com/marianadss05)
